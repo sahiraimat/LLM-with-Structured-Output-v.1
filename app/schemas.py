@@ -56,3 +56,30 @@ class EducationalAnswer(BaseModel):
         "advanced"
     ]
 
+
+class RAGRequest(BaseModel):
+
+    question: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000
+
+    )
+
+
+class RAGSource(BaseModel):
+    document_id: str
+    source: str
+    chunk_id: int
+    score: float
+    section: str | None = None
+
+
+class RAGResponse(BaseModel):
+
+    answer: str
+    sources: list[RAGSource]
+
+
+
+    

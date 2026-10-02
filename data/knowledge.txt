@@ -1,0 +1,30 @@
+Artificial Intelligence is the field of building
+systems that can perform tasks that normally require
+human intelligence.
+
+Machine Learning is a subset of Artificial Intelligence.
+It allows systems to learn patterns from data instead
+of being explicitly programmed for every situation.
+
+Supervised Learning uses labelled training data.
+Each training example contains input features and a
+known target or label.
+
+Unsupervised Learning works with data that does not have
+explicit labels. Clustering is a common unsupervised
+learning technique.
+
+Deep Learning is a subset of machine learning based on
+neural networks with multiple layers.
+
+A neural network consists of interconnected computational
+units commonly called neurons. Neural networks learn
+parameters such as weights and biases during training.
+
+Generative AI refers to models capable of generating new
+content such as text, images, audio, video, or code.
+
+Large Language Models are neural network models trained
+on large amounts of text and other data. They can perform
+tasks such as text generation, summarisation, question
+answering, and code generation.

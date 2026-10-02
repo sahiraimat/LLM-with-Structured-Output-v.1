@@ -3,7 +3,10 @@ from app.schemas import (
     AskRequest, 
     AIAnswer, 
     EducationalAnswer, 
-    EducationRequest
+    EducationRequest,
+    RAGRequest,
+    RAGResponse,
+    RAGSource
 )
 
 
@@ -15,11 +18,20 @@ import logging
 import time
 import uuid
 
+from app.document_loader import load_knowledge_base
+from app.retriever import search
+from app.llm import generate_rag_response
+
 from app.logging_config import setup_logging
 
 setup_logging()
 
 logger = logging.getLogger(__name__)
+
+
+load_knowledge_base(
+    "data/knowledge.txt"
+)
 
 
 
@@ -122,3 +134,58 @@ def educate(request: EducationRequest):
         level=request.level
     )
     return result
+
+
+
+@app.post(
+    "/ask-rag",
+    response_model=RAGResponse
+)
+def ask_rag(request: RAGRequest):
+
+    results = search(
+        request.question,
+        top_k=3
+    )
+
+    context_parts = []
+    for result in results:
+        metadata = result["metadata"]
+        context_parts.append(
+            f"""
+            SOURCE: {metadata["source"]}
+            CHUNK: {metadata["chunk_id"]}
+            SECTION: {metadata.get("section")}
+
+            CONTENT: {result["text"]}
+
+        """
+        )
+
+
+
+    context = "\n\n".join(
+        context_parts
+    )
+
+    answer = generate_rag_response(
+        question=request.question,
+        context=context
+    )
+
+
+    return RAGResponse(
+        answer=answer,
+        sources=[
+            RAGSource(
+            
+                document_id= result["metadata"]["document_id"],
+                source= result['metadata']['source'],
+                chunk_id= result["metadata"]["chunk_id"],
+                score= result["score"],
+                section= result["metadata"].get("section")
+
+            )
+            for result in results
+        ]
+    )

@@ -6,15 +6,19 @@ from app.retriever import add_document
 def load_knowledge_base(
         path: str
 ):
-    text = Path(path).read_text(
+
+    file_path = Path(path)
+
+    text = file_path.read_text(
         encoding="utf-8"
     )
 
-    document_id = Path(path).stem
+    document_id = file_path.stem
 
     chunks = chunk_text(
         text=text,
-        source=path,
+        document_id=document_id,
+        source=str(file_path),
         max_chars=1000,
         overlap_sentences=1
         )
@@ -23,7 +27,7 @@ def load_knowledge_base(
         add_document(
             text=chunk.text,
             metadata={
-                "document_id": document_id,
+                "document_id": chunk.document_id,
                 "source": chunk.source,
                 "chunk_id": chunk.chunk_id,
                 "section": chunk.section

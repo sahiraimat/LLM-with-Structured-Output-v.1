@@ -145,15 +145,27 @@ def ask_rag(request: RAGRequest):
 
     results = search(
         request.question,
-        top_k=3
+        top_k=3,
+        min_score=0.60
     )
 
+    if not results:
+        return RAGResponse(
+            answer = (
+                "I could not find relavant information "
+                "in the knowledge base."
+            ),
+            sources= []
+        )
+
     context_parts = []
+
     for result in results:
         metadata = result["metadata"]
         context_parts.append(
             f"""
             SOURCE: {metadata["source"]}
+            DOCUMENT_ID: {metadata["document_id"]}
             CHUNK: {metadata["chunk_id"]}
             SECTION: {metadata.get("section")}
 

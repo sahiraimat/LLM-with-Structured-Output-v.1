@@ -58,7 +58,7 @@ def generate_rag_response(
     Rules:
     1. Do not invent information.
     2. If the answer is not supported by the context, say so.
-    3. use the source information to support your answer.
+    3. use the source information to where the retrieved information came from.
     4. Do not claim information came from a source unless it is present in that source.
 
 

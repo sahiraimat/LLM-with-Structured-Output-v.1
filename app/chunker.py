@@ -30,25 +30,40 @@ def split_sentences(text: str) -> list[str]:
 
 def chunk_text(
         text: str,
+        document_id: str,
         source: str,
         max_chars: int = 1000,
         overlap_sentences: int = 1
 ) -> list[Chunk]:
 
-    paragraphs = [
-        paragraph.strip()
-        for paragraph in text.split("\n\n")
-        if paragraph.strip()
-    ]
 
+    lines = text.splitlines()
+    
     chunks: list[Chunk] = []
     current_sentences: list[str] = []
+    current_section: str | None = None
     chunk_id = 0
 
-    for paragraph in paragraphs:
-        sentences = split_sentences(
-            paragraph
+    for line in lines:
+
+        line = line.strip()
+
+        if not line:
+            continue
+
+        #Detect Markdown headings
+
+        heading_match = re.match(
+            r"^#{1,3}\s+(.+)",
+            line
         )
+
+        if heading_match:
+            current_section = heading_match.group(1).strip()
+            continue
+
+        sentences = split_sentences(line)
+
 
         for sentence in sentences:
             candidate = " ".join(
@@ -63,8 +78,8 @@ def chunk_text(
                         text=" ".join(current_sentences),
                         chunk_id=chunk_id,
                         source=source,
-                        document_id="",
-                        section=None
+                        document_id=document_id,
+                        section=current_section
                     )
                 )
                 chunk_id +=1 
@@ -84,8 +99,8 @@ def chunk_text(
                     ),
                     chunk_id=chunk_id,
                     source=source,
-                    document_id= "",
-                    section=None
+                    document_id= document_id,
+                    section=current_section
                 )
             )
         chunk_id += 1 
